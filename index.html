@@ -5,10 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>webGL course Aurelio Muñoz Hijano</title>
-    <link rel="stylesheet" href="default.css">
+    <link rel="stylesheet" href="css/default.css">
 </head>
 <body>
     <canvas id="renderCanvas" width="1024" height="768"></canvas>
     <script src="js/main.js"></script>
+    <script id="vertexShader" type="vertexShader">
+        #version 300 es
+        in vec3 position;
+        in vec4 color;
+        out vec4 fcolor;
+        
+        void main(){
+            gl_Position = vec4(position,1);
+            fcolor = color;
+        }
+    </script>
+    <script id="fragmentShader" type="fragmentShader">
+        #version 300 es
+        precision mediump float;
+        out vec4 finalColor;
+        in vec4 fcolor;
+        void main(){
+            finalColor = fcolor;
+        }
+    </script>
 </body>
 </html>
