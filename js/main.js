@@ -28,8 +28,8 @@ function start(){
     gl.bindBuffer(gl.ARRAY_BUFFER , triangleVertexColorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER , new Float32Array(triangleColors), gl.STATIC_DRAW)
 
-    var vertexShader =getAndCompileShader("vertexShader");
-    getAndCompileShader("fragmentShader");
+    var vertexShader = getAndCompileShader("vertexShader");
+    var fragmentShader = getAndCompileShader("fragmentShader");
 }
 
 function getAndCompileShader (id){
