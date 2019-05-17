@@ -30,6 +30,16 @@ function start(){
 
     var vertexShader = getAndCompileShader("vertexShader");
     var fragmentShader = getAndCompileShader("fragmentShader");
+    var shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram , vertexShader);
+    gl.attachShader(shaderProgram , fragmentShader);
+    gl.linkProgram( shaderProgram );
+
+    if (! gl.getProgramParameter(shaderProgram , gl.LINK_STATUS)){
+        alert("Could not initializse shader");
+    }
+
+    gl.useProgram(shaderProgram);
 }
 
 function getAndCompileShader (id){
@@ -44,10 +54,8 @@ function getAndCompileShader (id){
     }else if (id == "fragmentShader"){
         shader = gl.createShader(gl.FRAGMENT_SHADER);
     }
-    var vertexShader = gl.shaderSource(shader, shaderText);
-    var fragmentShader = gl.compileShader(shader);
-
-    var shaderProgram = 
+    gl.shaderSource(shader, shaderText);
+    gl.compileShader(shader);
 
     if ( !gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         alert (gl.getShaderInfoLog(shader));
