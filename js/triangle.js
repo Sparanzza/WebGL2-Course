@@ -41,7 +41,8 @@ gl.bufferData(gl.ARRAY_BUFFER , new Float32Array(trianglePositionAndColors), gl.
     var vertexShader = getAndCompileShader("vertexShader");
     var fragmentShader = getAndCompileShader("fragmentShader");
     var shaderProgram = gl.createProgram();
-    gl.attachShader(shaderProgram , vertexShader);
+    gl.
+    attachShader(shaderProgram , vertexShader);
     gl.attachShader(shaderProgram , fragmentShader);
     gl.linkProgram( shaderProgram );
 
