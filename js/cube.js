@@ -5,7 +5,7 @@ var gl;
 function start(){
     console.log("started");
     var canvas = document.getElementById("renderCanvas");
-    gl = canvas.getContext("webgl2");
+    gl = canvas.getContext("webgl2"); 
 
     var vertices =[
         -0.5, -0.5, -0.5,
@@ -107,14 +107,40 @@ function start(){
     gl.vertexAttribPointer(colorAttributeLocation , 4 , gl.FLOAT,false, 0,0);
 
 
+    var modelMatrix = glMatrix.mat4.create();
+    var viewMatrix = glMatrix.mat4.create();
+    var projectionMatrix = glMatrix.mat4.create();
+    
+    glMatrix.mat4.perspective(projectionMatrix , 45 * Math.PI / 180.0, canvas.width / canvas.height, .1 , 100);
+    
+    var modelMatrixLocation = gl.getUniformLocation(shaderProgram , "modelMatrix");
+    var viewMatrixLocation = gl.getUniformLocation(shaderProgram , "viewMatrix");
+    var projectionMatrixLocation = gl.getUniformLocation(shaderProgram , "projectionMatrix");
+    
+    var angle = 0;
+
+
     requestAnimationFrame(RunRenderLoop);
 
     function RunRenderLoop(){
-
+        
         gl.clearColor(0,0,0,1);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DETPH_BUFFER_BIT);
+        gl.enable(gl.DEPTH_TEST);
+
+        glMatrix.mat4.identity(modelMatrix);
+        glMatrix.mat4.translate(modelMatrix, modelMatrix, [0,0,-10]);
+        glMatrix.mat4.rotateY(modelMatrix , modelMatrix, angle);
+        //glMatrix.mat4.translate(modelMatrix, modelMatrix, [0,0,-10]);
+        glMatrix.mat4.rotateZ(modelMatrix , modelMatrix, angle / 3);
+        angle += .05;
+
+        gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix);
+        gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+        gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
 
         gl.useProgram(shaderProgram);
+
         gl.bindVertexArray(vao);
         gl.drawArrays(gl.TRIANGLES , 0 , 36);
         requestAnimationFrame(RunRenderLoop);
