@@ -124,14 +124,14 @@ function start() {
     var cube = createCube();
 
     var uniformColorsArray = [];
-    var color = vec4.fromValues(1,0,0,1);
+    var color = glMatrix.vec4.fromValues(1,0,0,1);
     uniformColorsArray.push(color);
-    color = vec4.fromValues(0,1,0,1);
+    color = glMatrix.vec4.fromValues(0,1,0,1);
     uniformColorsArray.push(color);
-    color = vec4.fromValues(0,0,1,1);
+    color = glMatrix.vec4.fromValues(0,0,1,1);
     uniformColorsArray.push(color);
 
-    var offsetVector = vec3.fromValues(-2,0,2);
+    var offsetVector = glMatrix.vec3.fromValues(-2,0,2);
     
     gl.useProgram(cube.shaderProgram);
 
@@ -165,11 +165,12 @@ function start() {
         gl.uniformMatrix4fv(cube.modelMatrixLocation, false, cube.modelMatrix);
         gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
         gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
-        gl.uniform4fv(colorUniformArrayLocation0 , false, colorUniformArray[0]);
-        gl.uniform4fv(colorUniformArrayLocation1 , false, colorUniformArray[2]);
-        gl.uniform4fv(colorUniformArrayLocation2 , false, colorUniformArray[2]);
 
-        gl.uniform3fv(offsetUniformLocation , false, offsetVector);
+        gl.uniform4fv(colorUniformArrayLocation0 , uniformColorsArray[0]);
+        gl.uniform4fv(colorUniformArrayLocation1 ,  uniformColorsArray[2]);
+        gl.uniform4fv(colorUniformArrayLocation2 ,  uniformColorsArray[2]);
+
+        gl.uniform3fv(offsetUniformLocation , offsetVector);
 
 
         gl.useProgram(cube.shaderProgram);
@@ -178,7 +179,7 @@ function start() {
 
         gl.drawArraysInstanced(gl.TRIANGLES, 0,36,3);
 
-
+        angle+= .01;
         requestAnimationFrame(runRenderLoop);
     }
 
