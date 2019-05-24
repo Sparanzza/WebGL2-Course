@@ -122,6 +122,16 @@ function start() {
     gl = canvas.getContext("webgl2");
         
     var cube = createCube();
+
+    var uniformColorsArray = [];
+    var color = vec4.fromValues(1,0,0,1);
+    uniformColorsArray.push(color);
+    color = vec4.fromValues(0,1,0,1);
+    uniformColorsArray.push(color);
+    color = vec4.fromValues(0,0,1,1);
+    uniformColorsArray.push(color);
+
+    var offsetVector = vec3.fromValues(-2,0,2);
     
     gl.useProgram(cube.shaderProgram);
 
@@ -130,6 +140,13 @@ function start() {
     glMatrix.mat4.perspective(projectionMatrix, 45 * Math.PI / 180.0, canvas.width / canvas.height, 0.1, 10);
     var viewMatrixLocation = gl.getUniformLocation(cube.shaderProgram, "viewMatrix");
     var projectionMatrixLocation = gl.getUniformLocation(cube.shaderProgram, "projectionMatrix");
+    
+    var colorUniformArrayLocation0 = gl.getUniformLocation(cube.shaderProgram, "colorUniformArray[0]");
+    var colorUniformArrayLocation1 = gl.getUniformLocation(cube.shaderProgram, "colorUniformArray[1]");
+    var colorUniformArrayLocation2 = gl.getUniformLocation(cube.shaderProgram, "colorUniformArray[2]");
+
+    var offsetUniformLocation = gl.getUniformLocation (cube.shaderProgram , "offsets");
+
 
     var angle = 0;
 
@@ -143,16 +160,24 @@ function start() {
         glMatrix.mat4.translate(cube.modelMatrix, cube.modelMatrix, [0, 0, -7]);
         glMatrix.mat4.rotateY(cube.modelMatrix, cube.modelMatrix, angle);
         glMatrix.mat4.rotateX(cube.modelMatrix, cube.modelMatrix, .25);
-      
 
-        angle += .1;
 
         gl.uniformMatrix4fv(cube.modelMatrixLocation, false, cube.modelMatrix);
         gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
         gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
+        gl.uniform4fv(colorUniformArrayLocation0 , false, colorUniformArray[0]);
+        gl.uniform4fv(colorUniformArrayLocation1 , false, colorUniformArray[2]);
+        gl.uniform4fv(colorUniformArrayLocation2 , false, colorUniformArray[2]);
+
+        gl.uniform3fv(offsetUniformLocation , false, offsetVector);
+
+
         gl.useProgram(cube.shaderProgram);
         gl.bindVertexArray(cube.vao);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
+
+        gl.drawArraysInstanced(gl.TRIANGLES, 0,36,3);
+
 
         requestAnimationFrame(runRenderLoop);
     }
