@@ -14,40 +14,38 @@ function createRectangle()
       -1, -1, 0,
       1, -1, 0,
       1, 1, 0,
-      -1, -1, 0,
-     1, 1, 0,
      -1, 1, 0
     ];
 
+    rectangle.indices = 
+    [
+        0,1,2,
+        0,2,3
+    ]
 
-    rectangle.colors = [];
-
-    var faceColors = [
-        [1.0, 0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0, 1.0],
-        [1.0, 0.0, 0.0, 1.0]
+    rectangle.colors = [        
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0
     ];
 
-    faceColors.forEach(function (color) {
-        for (var i = 0 ; i < 6 ; i++) {
-            rectangle.colors = rectangle.colors.concat(color);
-        }
-    }
-    );
 
+    rectangle.vao = gl.createVertexArray();
+    gl.bindVertexArray(rectangle.vao);
 
     rectangle.positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, rectangle.positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rectangle.vertices), gl.STATIC_DRAW);
 
-
-
     rectangle.colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, rectangle.colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(rectangle.colors), gl.STATIC_DRAW);
+
+    rectangle.indicesBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER , rectangle.indicesBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER , new Uint16Array(rectangle.indices) ,gl.STATIC_DRAW);
+
 
     rectangle.vertexShader = getAndCompileShader("vertexShader");
     rectangle.fragmentshader = getAndCompileShader("fragmentShader");
@@ -59,10 +57,6 @@ function createRectangle()
     if (!gl.getProgramParameter(rectangle.shaderProgram, gl.LINK_STATUS)) {
         alert("Could not link shaders");
     }
-
-
-    rectangle.vao = gl.createVertexArray();
-    gl.bindVertexArray(rectangle.vao);
 
     rectangle.positionAttributeLocation = gl.getAttribLocation(rectangle.shaderProgram, "position");
     gl.enableVertexAttribArray(rectangle.positionAttributeLocation);
@@ -140,9 +134,9 @@ function start() {
 
         gl.useProgram(rectangle.shaderProgram);
         gl.bindVertexArray(rectangle.vao);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-        gl.drawArraysInstanced(gl.TRIANGLES, 0,6,3);
+        gl.drawElements(gl.TRIANGLES , 6 , gl.UNSIGNED_SHORT , 0);
+        gl.drawArraysInstanced(gl.TRIANGLES, 0,4,3);
 
         angle+= .01;
         requestAnimationFrame(runRenderLoop);
