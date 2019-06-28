@@ -10,10 +10,10 @@ function createCube() {
     var cube = {};
 
     cube.vertices = [
-         -0.5, -0.5, -0.5,
-         0.5, -0.5, -0.5,
-         0.5, 0.5, -0.5,
-         0.5, 0.5, -0.5,
+        -0.5, -0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5, 0.5, -0.5,
+        0.5, 0.5, -0.5,
         -0.5, 0.5, -0.5,
         -0.5, -0.5, -0.5,
 
@@ -199,8 +199,6 @@ function createCube() {
     gl.vertexAttribPointer(cube.textureCoordinateAttributeLocation, 2, gl.FLOAT, false, 0, 0);
     cube.modelMatrix = glMatrix.mat4.create();
 
-   
-
     cube.modelMatrixLocation = gl.getUniformLocation(cube.shaderProgram, "modelMatrix");
     cube.samplerUniformLocation = gl.getUniformLocation(cube.shaderProgram, "sampler0");
     cube.samplerOneUniformLocation = gl.getUniformLocation(cube.shaderProgram, "sampler1");
@@ -210,15 +208,14 @@ function createCube() {
     gl.bindTexture(gl.TEXTURE_2D, cube.texture1);
     gl.uniform1i(cube.samplerUniformLocation, 0);
 
-
     gl.activeTexture(gl.TEXTURE1); // you have at least 8 textures possible
     gl.bindTexture(gl.TEXTURE_2D, cube.texture2);
     gl.uniform1i(cube.samplerOneUniformLocation, 1);
 
-
     return cube;
 
 }
+
 
 function start() {
 
@@ -237,61 +234,13 @@ function start() {
 
     var angle = 0;
     //camera
-    var camera = { position: glMatrix.vec3.fromValues(0,0,0) , target: glMatrix.vec3.fromValues(0,0,0)};
+    var camera = {
+         position: glMatrix.vec3.fromValues(0,0,0),
+         target: glMatrix.vec3.fromValues(0,0,0),
+         direction: glMatrix.vec3.fromValues(0,0,0),
+         pitch: 0, yaw: -1 * Math.PI/2.0
+        };
     glMatrix.vec3.add(camera.target , camera.position, glMatrix.vec3.fromValues(0,0,-1));
-
-    //solved two buttons 
-
-    var isWPressed = false;
-    var isSPressed = false;
-    var isAPressed = false;
-    var isDPressed = false;
-
-
-    document.addEventListener("keydown" , function(event){
-        if(event.key == 'w'){
-             isWPressed = true;
-            }
-        if(event.key == 's'){
-             isSPressed = true; 
-            }
-        if(event.key == 'a'){
-             isAPressed = true;
-        }
-        if(event.key == 'd'){
-             isDPressed = true;
-        }
-    });
-
-    document.addEventListener("keyup" , function(event){
-        if(event.key == 'w'){
-             isWPressed = false;
-            }
-        if(event.key == 's'){
-             isSPressed = false; 
-            }
-        if(event.key == 'a'){
-             isAPressed = false;
-        }
-        if(event.key == 'd'){
-             isDPressed = false;
-        }
-    });
-
-    function moveCamera(){
-        if(isWPressed){
-            camera.position[2] -= .1;
-           }
-       if(isSPressed){
-            camera.position[2] += .1; 
-           }
-       if(isAPressed){
-            camera.position[0] -= .1;
-       }
-       if(isDPressed){
-            camera.position[0] += .1; 
-       }
-    }
 
 
     function runRenderLoop() {
@@ -302,10 +251,12 @@ function start() {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.enable(gl.DEPTH_TEST);
 
-        moveCamera();
-        glMatrix.vec3.add(camera.target , camera.position, glMatrix.vec3.fromValues(0,0,-1));
-        glMatrix.mat4.lookAt(viewMatrix, camera.position, camera.target , glMatrix.vec3.fromValues(0,1,0));
-        //camera.position[1] += .005;
+        moveCamera(camera);
+        var target = glMatrix.vec3.create();
+        glMatrix.vec3.add( target , camera.position , camera.direction );
+
+        // glMatrix.vec3.add(camera.target , camera.position, glMatrix.vec3.fromValues(0,0,-1));
+        glMatrix.mat4.lookAt(viewMatrix, camera.position, target , glMatrix.vec3.fromValues(0,1,0));
 
         glMatrix.mat4.identity(cube.modelMatrix);
 
@@ -348,14 +299,13 @@ function start() {
         gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
         gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
         gl.drawArrays(gl.TRIANGLES, 0, 36);
-
-
-        
     }
 
     requestAnimationFrame(runRenderLoop);
 
+    
 }
+
 
 function getAndCompileShader(id) {
     var shader;
@@ -375,3 +325,82 @@ function getAndCompileShader(id) {
     return shader;
 }
 
+
+//solved two buttons 
+
+var isWPressed = false;
+var isSPressed = false;
+var isAPressed = false;
+var isDPressed = false;
+var isGPressed = false;
+var isJPressed = false;
+
+
+document.addEventListener("keydown" , function(event){
+    if(event.key == 'w'){
+        isWPressed = true;
+    }
+    if(event.key == 's'){
+        isSPressed = true; 
+    }
+    if(event.key == 'a'){
+        isAPressed = true;
+    }
+    if(event.key == 'd'){
+        isDPressed = true;
+    }
+    if(event.key == 'g'){
+        isGPressed = true;
+    }
+    if(event.key == 'j'){
+        isJPressed = true;
+    }
+});
+
+document.addEventListener("keyup" , function(event){
+    if(event.key == 'w'){
+        isWPressed = false;
+    }
+    if(event.key == 's'){
+        isSPressed = false; 
+    }
+    if(event.key == 'a'){
+        isAPressed = false;
+    }
+    if(event.key == 'd'){
+        isDPressed = false;
+    }
+    if(event.key == 'g'){
+        isGPressed = false;
+    }
+    if(event.key == 'j'){
+        isJPressed = false;
+    }
+        
+});
+
+function moveCamera( camera ){
+
+    camera.direction[0]= Math.cos(camera.pitch) * Math.cos(camera.yaw);
+    camera.direction[1]= Math.sin(camera.pitch);
+    camera.direction[2]= Math.cos(camera.pitch) * Math.sin(camera.yaw);
+
+    if(isWPressed){
+        camera.position[2] -= .1;
+    }
+    if(isSPressed){
+        camera.position[2] += .1;
+    }
+    if(isAPressed){
+        camera.position[0] -= .1;
+    }
+    if(isDPressed){
+        camera.position[0] += .1; 
+    }
+    if(isGPressed){
+        camera.yaw -= .02;
+    }
+    if(isJPressed){
+        camera.yaw += .02;
+    }
+}
