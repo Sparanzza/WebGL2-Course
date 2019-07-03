@@ -334,6 +334,9 @@ var isAPressed = false;
 var isDPressed = false;
 var isGPressed = false;
 var isJPressed = false;
+var isYPressed = false;
+var isHPressed = false;
+
 
 
 document.addEventListener("keydown" , function(event){
@@ -354,6 +357,12 @@ document.addEventListener("keydown" , function(event){
     }
     if(event.key == 'j'){
         isJPressed = true;
+    }
+    if(event.key == 'y'){
+        isYPressed = true;
+    }
+    if(event.key == 'h'){
+        isHPressed = true;
     }
 });
 
@@ -376,6 +385,12 @@ document.addEventListener("keyup" , function(event){
     if(event.key == 'j'){
         isJPressed = false;
     }
+    if(event.key == 'y'){
+        isYPressed = false;
+    }
+    if(event.key == 'h'){
+        isHPressed = false;
+    }
         
 });
 
@@ -385,22 +400,41 @@ function moveCamera( camera ){
     camera.direction[1]= Math.sin(camera.pitch);
     camera.direction[2]= Math.cos(camera.pitch) * Math.sin(camera.yaw);
 
+    
+    camera.right = glMatrix.vec3.fromValues( -1 * Math.sin(camera.yaw), 0 , Math.cos(camera.yaw) );
+    
+    var movementDirection = glMatrix.vec3.create();
+
     if(isWPressed){
-        camera.position[2] -= .1;
+        // camera.position[2] -= .1;
+        glMatrix.vec3.scale(movementDirection , camera.direction, .1);
+        glMatrix.vec3.add(camera.position , camera.position, movementDirection );
     }
     if(isSPressed){
-        camera.position[2] += .1;
+        // camera.position[2] += .1;
+        glMatrix.vec3.scale(movementDirection , camera.direction, -.1);
+        glMatrix.vec3.add(camera.position , camera.position, movementDirection );
     }
     if(isAPressed){
-        camera.position[0] -= .1;
+        // camera.position[0] -= .1;
+        glMatrix.vec3.scale(movementDirection , camera.right, -.1);
+        glMatrix.vec3.add(camera.position , camera.position, movementDirection );
     }
     if(isDPressed){
-        camera.position[0] += .1; 
+        // camera.position[0] += .1;
+        glMatrix.vec3.scale(movementDirection , camera.right, .1);
+        glMatrix.vec3.add(camera.position , camera.position, movementDirection ); 
     }
     if(isGPressed){
-        camera.yaw -= .02;
+        camera.yaw -= .1;
     }
     if(isJPressed){
-        camera.yaw += .02;
+        camera.yaw += .1;
+    }
+    if(isYPressed){
+        camera.pitch -= .1;
+    }
+    if(isHPressed){
+        camera.pitch += .1;
     }
 }
